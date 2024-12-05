@@ -1,0 +1,80 @@
+CREATE TABLE cliente (
+    id_cliente INT IDENTITY(1,1) PRIMARY KEY,  -- Ajuste da mas claridad
+    nombre VARCHAR(30) NOT NULL,
+    apellido VARCHAR(30) NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL, -- Renombrado y se amplia tamaño
+    tipo_documento VARCHAR(20) NOT NULL,
+    correo VARCHAR(50) NOT NULL,
+    telefono VARCHAR(15) NOT NULL,
+    direccion VARCHAR(50) NOT NULL
+);
+
+//Se crearon dos tablas independientes mascota y mascota_tipo para almacenar la información de la especie y la raza de la mascota, para evitar la 
+//duplicación de datos y mejora la normalización.
+CREATE TABLE mascota (
+    id_mascota INT IDENTITY(1,1) PRIMARY KEY,
+    id_cliente INT NOT NULL,  -- Relación con cliente
+    especie VARCHAR(20) NOT NULL,
+    id_tipo INT NOT NULL,  -- Relación con `mascota_tipo` para razas
+    sexo CHAR(1) NOT NULL,
+    nombre VARCHAR(20) NOT NULL,
+    edad INT NOT NULL,
+    peso FLOAT NOT NULL,
+    FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
+    FOREIGN KEY (id_tipo) REFERENCES mascota_tipo(id_tipo)
+);
+
+//especie fue agregada para almacenar el tipo de especie (como perro, gato, etc.), mejorando la estructura y permitiendo que las razas sean categorizadas por especie.
+CREATE TABLE mascota_tipo (
+    id_tipo INT IDENTITY(1,1) PRIMARY KEY,
+    especie VARCHAR(20) NOT NULL,
+    raza VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE servicio (
+    id_servicio INT IDENTITY(1,1) PRIMARY KEY,
+    nombre_servicio VARCHAR(50) NOT NULL --Renombrado ajuste da mas claridad
+);
+
+//Se agregaron id_mascota y id_servicio como claves foráneas para relacionar cada servicio con una mascota específica.
+CREATE TABLE servicio_mascota (
+    id_servicio_mascota INT IDENTITY(1,1) PRIMARY KEY,
+    id_mascota INT NOT NULL,
+    id_servicio INT NOT NULL,
+    FOREIGN KEY (id_mascota) REFERENCES mascota(id_mascota),
+    FOREIGN KEY (id_servicio) REFERENCES servicio(id_servicio)
+);
+
+CREATE TABLE veterinario (
+    id_veterinario INT IDENTITY(1,1) PRIMARY KEY,
+    nombre VARCHAR(30) NOT NULL,
+    apellido VARCHAR(30) NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL,
+    tipo_documento VARCHAR(20) NOT NULL,
+    correo VARCHAR(50) NOT NULL,
+    telefono VARCHAR(15) NOT NULL,
+    direccion VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE especialidad (
+    id_especialidad INT IDENTITY(1,1) PRIMARY KEY,
+    nombre_especialidad VARCHAR(50) NOT NULL
+);
+
+//id_veterinario y id_especialidad claves foráneas para crear una relación de muchos a muchos entre veterinarios y especialidades.
+CREATE TABLE veterinario_especialidad (
+    id_veterinario INT NOT NULL,
+    id_especialidad INT NOT NULL,
+    PRIMARY KEY (id_veterinario, id_especialidad),
+    FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario),
+    FOREIGN KEY (id_especialidad) REFERENCES especialidad(id_especialidad)
+);
+
+CREATE TABLE cita (
+    id_cita INT IDENTITY(1,1) PRIMARY KEY,
+    id_mascota INT NOT NULL,
+    id_veterinario INT NOT NULL,
+    fecha DATETIME NOT NULL,
+    FOREIGN KEY (id_mascota) REFERENCES mascota(id_mascota),
+    FOREIGN KEY (id_veterinario) REFERENCES veterinario(id_veterinario)
+);
